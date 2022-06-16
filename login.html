@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link href="main.css" rel="stylesheet" type="text/css" media="all">
 <title>高田荘ログイン</title>
+<script type="text/javascript" src="sha256.js"></script>
 </head>
   <body>
       <h1>高田荘 <e><span style="border: solid 1px; "><e>東</e></span><span style="border: 1px solid;"><e>南</e></span><span style="border: 1px solid;"><e>西</e></span></span><span style="border: 1px solid;"><e>北</e></span></e></h1>
@@ -14,8 +18,44 @@
       <hr>
 
       <h2>高田荘会員ログイン</h2>
-      <p>読み込み中...</p>
-
+      <form id="form">
+        <p id="message">パスワードを入力してください</p>
+        <input type="password" placeholder="password" id="password">
+      </form>
+      <script>
+        function hash(text) {
+          const sha = new jsSHA('SHA-256', 'TEXT');
+          sha.update(text);
+          return sha.getHash('HEX');
+        }
+        function auth(password) {
+          const url = hash(password);
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', url);
+          xhr.send();
+          xhr.onload = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+              window.location = url;
+            } else {
+              const message = document.getElementById('message');
+              const input = document.getElementById('password');
+              message.innerHTML = 'Wrong password! Try again.';
+              input.value = '';
+            }
+          };
+          xhr.onerror = function () {
+            const message = document.getElementById('message');
+            message.innerHTML = 'ERROR';
+          };
+        }
+        const form = document.getElementById('form');
+        form.addEventListener('submit', function (event) {
+          const password = document.getElementById('password').value;
+          auth(password);
+          event.preventDefault();
+        });
+      </script>
+      <br>
     </body>
   <footer><hr> Copyright &copy; 2022 Takada-so. All rights reserved. <br><min>本団体は皆様とは違う世界線にあります。皆様の世界線には存在せず、実在の人物・団体とは一切関係がありません。</min><hr></footer>
 </html>
